@@ -38,10 +38,13 @@ If you would prefer to have your bookmarks stored in alternate location there ar
 
 bmks_add() {
 	[ -z "$url" ] && printf "Error: url must be provided\n\n" && show_usage && exit 0
-	printf "Description: "
-	read description
-	[ -z "$description" ] && echo "$url" >> $URL_FILE_PATH/$URL_FILE_NAME
-	[ -n "$description" ] && echo "$description - $url" >> $URL_FILE_PATH/$URL_FILE_NAME
+	printf "Name: "
+	read name
+	printf "Tags (comma-separated): "
+	read tags
+	[ -z "$name" ] && name="$url"
+	[ -z "$tags" ] && echo "$name - $url" >> "$URL_FILE_PATH/$URL_FILE_NAME"
+	[ -n "$tags" ] && echo "$name - $url - [$tags]" >> "$URL_FILE_PATH/$URL_FILE_NAME"
 }
 
 bmks_ls() {
@@ -52,7 +55,7 @@ bmks_ls() {
 bmks_del() {
 	bmks_check
 	case $PREFERED_LAUNCHER in
-		dmenu) sed -i "/$(cat $URL_FILE_PATH/$URL_FILE_NAME | sort | dmenu -l $(cat $URL_FILE_PATH/$URL_FILE_NAME | wc -l))/d" $URL_FILE_PATH/$URL_FILE_NAME ;;
+		dmenu) sed -i "/$(cat $URL_FILE_PATH/$URL_FILE_NAME | sort | dmenu -l 20 -z 1024)/d" $URL_FILE_PATH/$URL_FILE_NAME ;;
 		fzf) sed -i "/$(cat $URL_FILE_PATH/$URL_FILE_NAME | sort | fzf)/d" $URL_FILE_PATH/$URL_FILE_NAME ;;
 	esac
 }
@@ -60,8 +63,8 @@ bmks_del() {
 bmks_display() {
 	bmks_check
 	case $PREFERED_LAUNCHER in
-		dmenu) cat $URL_FILE_PATH/$URL_FILE_NAME | sort | dmenu -l $(cat $URL_FILE_PATH/$URL_FILE_NAME | wc -l) | awk '{print $(NF)}' | xargs -I '{}' $BROWSER {} ;;
-		fzf) cat $URL_FILE_PATH/$URL_FILE_NAME | sort | fzf | awk '{print $(NF)}' | xargs -I '{}' $BROWSER {} ;;
+		dmenu) cat $URL_FILE_PATH/$URL_FILE_NAME | sort | dmenu -l 20 -z 1024 | awk -F ' - ' '{print $2}' | xargs -I '{}' "$BROWSER" {} ;;
+		fzf) cat $URL_FILE_PATH/$URL_FILE_NAME | sort | fzf | awk -F ' - ' '{print $2}' | xargs -I '{}' "$BROWSER" {} ;;
 	esac
 }
 
