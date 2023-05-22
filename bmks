@@ -1,9 +1,16 @@
-#! /bin/bash
+#!/bin/bash
+# bmks: unix bookmark management tool
+# 
+# It takes an argument and an url, it can add, delete, list, and open through
+# either dmenu or fzf the list of bookmarks with a browser of choice.
+#
+# $1 command : help, add, del, ls, dmenu, fzf
+# $2 string  : Url of choice
 
 # set prefered launcher
 PREFERED_LAUNCHER=dmenu
 # set path where urls will be stored
-URL_FILE_PATH=$HOME/Documents/.bmks/
+URL_FILE_PATH=$HOME/.bookmarks/
 # name of file urls will be stored in
 URL_FILE_NAME=urls
 
