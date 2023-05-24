@@ -53,31 +53,31 @@ bmks_add() {
 
 bmks_ls() {
 	bmks_check
-	cat $URL_FILE_PATH/$URL_FILE_NAME | sort
+	cat "$URL_FILE_PATH/$URL_FILE_NAME" | sort
 }
 
 bmks_del() {
 	bmks_check
 	case $PREFERED_LAUNCHER in
-		dmenu) sed -i "/$(cat $URL_FILE_PATH/$URL_FILE_NAME | sort | dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH)/d" $URL_FILE_PATH/$URL_FILE_NAME ;;
-		fzf) sed -i "/$(cat $URL_FILE_PATH/$URL_FILE_NAME | sort | fzf)/d" $URL_FILE_PATH/$URL_FILE_NAME ;;
+		dmenu) sed -i "/$(cat "$URL_FILE_PATH/$URL_FILE_NAME" | sort | dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH)/d" "$URL_FILE_PATH/$URL_FILE_NAME" ;;
+		fzf) sed -i "/$(cat "$URL_FILE_PATH/$URL_FILE_NAME" | sort | fzf)/d" "$URL_FILE_PATH/$URL_FILE_NAME" ;;
 	esac
 }
 
 bmks_display() {
 	bmks_check
 	case $PREFERED_LAUNCHER in
-		dmenu) cat $URL_FILE_PATH/$URL_FILE_NAME | sort | dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH | awk -F ' - ' '{print $4}' | xargs -I '{}' "$BROWSER" {} ;;
-		fzf) cat $URL_FILE_PATH/$URL_FILE_NAME | sort | fzf | awk -F ' - ' '{print $4}' | xargs -I '{}' "$BROWSER" {} ;;
+		dmenu) cat "$URL_FILE_PATH/$URL_FILE_NAME" | sort | dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH | awk -F ' - ' '{print $4}' | xargs -I '{}' "$BROWSER" {} ;;
+		fzf) cat "$URL_FILE_PATH/$URL_FILE_NAME" | sort | fzf | awk -F ' - ' '{print $4}' | xargs -I '{}' "$BROWSER" {} ;;
 	esac
 }
 
 bmks_check() {
-	[ ! -s $URL_FILE_PATH/$URL_FILE_NAME ] && printf "Error: No bookmarks found to display. Try adding some!\n\n" && show_usage && exit 0
+	[ ! -s "$URL_FILE_PATH/$URL_FILE_NAME" ] && printf "Error: No bookmarks found to display. Try adding some!\n\n" && show_usage && exit 0
 }
 
-[ ! -d $URL_FILE_PATH ] && mkdir $URL_FILE_PATH
-[ ! -f $URL_FILE_PATH/$URL_FILE_NAME ] && touch $URL_FILE_PATH/$URL_FILE_NAME
+[ ! -d "$URL_FILE_PATH" ] && mkdir "$URL_FILE_PATH"
+[ ! -f "$URL_FILE_PATH/$URL_FILE_NAME" ] && touch "$URL_FILE_PATH/$URL_FILE_NAME"
 
 case "$1" in
 	"help") show_usage ;;
