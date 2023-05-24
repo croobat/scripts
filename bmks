@@ -1,6 +1,6 @@
 #!/bin/bash
 # bmks: unix bookmark management tool
-# 
+#
 # It takes an argument and an url, it can add, delete, list, and open through
 # dmenu the list of bookmarks with a browser of choice.
 #
@@ -33,20 +33,23 @@ bmks dmenu
 bmks fzf
 	manual switch for displaying bookmarks in fzf
 
-Configuration is done by directly editing the script. Dmenu will display a menu that will allow you to choose a bookmark and open it in your default browser.
-
-If you would prefer to have your bookmarks stored in alternate location there are also variables that can be changed for that. The default is /home/user/.bmks/urls\n"
+Dmenu will display a menu that will allow you to choose a bookmark and open it in your default browser."
 }
 
 bmks_add() {
-	[ -z "$url" ] && printf "Error: url must be provided\n\n" && show_usage && exit 0
+	[ -z "$url" ] &&
+		printf "Error: url must be provided\n\n" &&
+		show_usage && exit 0
 	printf "Name: "
 	IFS= read -r name
 	printf "Tags (comma-separated): "
 	IFS= read -r tags
-	[ -z "$name" ] && name="$url"
-	[ -z "$tags" ] && echo "$name - $url" >> "$URL_FILE_PATH/$URL_FILE_NAME"
-	[ -n "$tags" ] && echo "$name - $url - [$tags]" >> "$URL_FILE_PATH/$URL_FILE_NAME"
+	[ -z "$name" ] &&
+		name="$url"
+	[ -z "$tags" ] &&
+		echo "$name - $url" >> "$URL_FILE_PATH/$URL_FILE_NAME"
+	[ -n "$tags" ] &&
+		echo "$name - $url - [$tags]" >> "$URL_FILE_PATH/$URL_FILE_NAME"
 }
 
 bmks_ls() {
@@ -56,20 +59,27 @@ bmks_ls() {
 
 bmks_del() {
 	bmks_check
-	sed -i "/$(sort "$URL_FILE_PATH/$URL_FILE_NAME" | dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH)/d" "$URL_FILE_PATH/$URL_FILE_NAME"
+	sed -i "/$(sort "$URL_FILE_PATH/$URL_FILE_NAME" |
+		dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH)/d" "$URL_FILE_PATH/$URL_FILE_NAME"
 }
 
 bmks_display() {
 	bmks_check
-	sort "$URL_FILE_PATH/$URL_FILE_NAME" | dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH | awk -F ' - ' '{print $4}' | xargs -I '{}' "$BROWSER" {}
+	sort "$URL_FILE_PATH/$URL_FILE_NAME" |
+		dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH |
+		awk -F ' - ' '{print $4}' |
+		xargs -I '{}' "$BROWSER" {}
 }
 
 bmks_check() {
-	[ ! -s "$URL_FILE_PATH/$URL_FILE_NAME" ] && printf "Error: No bookmarks found to display. Try adding some!\n\n" && show_usage && exit 0
+	[ ! -s "$URL_FILE_PATH/$URL_FILE_NAME" ] &&
+		printf "Error: No bookmarks found to display. Try adding some!\n\n" && show_usage &&
+		exit 0
 }
 
-[ ! -d "$URL_FILE_PATH" ] && mkdir "$URL_FILE_PATH"
-[ ! -f "$URL_FILE_PATH/$URL_FILE_NAME" ] && touch "$URL_FILE_PATH/$URL_FILE_NAME"
+[ ! -d "$URL_FILE_PATH" ] &&
+	mkdir "$URL_FILE_PATH" [ ! -f "$URL_FILE_PATH/$URL_FILE_NAME" ] &&
+	touch "$URL_FILE_PATH/$URL_FILE_NAME"
 
 case "$1" in
 	"help") show_usage ;;
