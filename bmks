@@ -1,39 +1,42 @@
 #!/bin/bash
 # bmks: unix bookmark management tool
 #
-# It takes an argument and a URL, it can add, delete, list, and open through
 # dmenu the list of bookmarks with a browser of choice.
+# If no browser is specified, firefox is used.
+# If no bookmark file is specified, the default is used.
 #
 
 URL_FILE_PATH=$HOME/.bmks/
-URL_FILE_NAME=urls
+DEFAULT_URL_FILE_NAME=urls
 DMENU_WIDTH=1366
 DMENU_NUMBER_LINES=20
 DMENU_BROWSER_WIDTH=360
 BROWSERS=(
 	"firefox"
+	"qutebrowser"
 	"firefox-developer-edition"
 	"google-chrome-stable"
 	"google-chrome-unstable"
-	"qutebrowser"
 )
+
+URL_FILE_NAME=${1:-$DEFAULT_URL_FILE_NAME}
 
 bmks_display() {
 	bmks_check
-		selected_url=$(grep -v '^#' "$URL_FILE_PATH/$URL_FILE_NAME" | sort |
-		dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH |
-		awk -F ' - ' '{print $4}')
-		[ -z "$selected_url" ] && exit 0
+	selected_url=$(grep -v '^#' "$URL_FILE_PATH/$URL_FILE_NAME" | sort |
+	dmenu -l $DMENU_NUMBER_LINES -z $DMENU_WIDTH |
+	awk -F ' - ' '{print $4}')
+	[ -z "$selected_url" ] && exit 0
 
-		selected_browser=$(printf "%s\n" "${BROWSERS[@]}" | dmenu -l ${#BROWSERS[@]} -z $DMENU_BROWSER_WIDTH)
-		[ -z "$selected_browser" ] && exit 0
+	selected_browser=$(printf "%s\n" "${BROWSERS[@]}" | dmenu -l ${#BROWSERS[@]} -z $DMENU_BROWSER_WIDTH)
+	[ -z "$selected_browser" ] && exit 0
 
-		case "$selected_browser" in
-				"firefox" | "firefox-developer-edition" | "google-chrome-stable" | "google-chrome-unstable" | "qutebrowser")
-						"$selected_browser" "$selected_url" ;;
-				*)
-						printf "Error: Unsupported browser selected.\n" && exit 1 ;;
-		esac
+	case "$selected_browser" in
+			"firefox" | "firefox-developer-edition" | "google-chrome-stable" | "google-chrome-unstable" | "qutebrowser")
+					"$selected_browser" "$selected_url" ;;
+			*)
+					printf "Error: Unsupported browser selected.\n" && exit 1 ;;
+	esac
 }
 
 bmks_check() {
@@ -43,9 +46,8 @@ bmks_check() {
 }
 
 [ ! -d "$URL_FILE_PATH" ] &&
-	mkdir "$URL_FILE_PATH" [ ! -f "$URL_FILE_PATH/$URL_FILE_NAME" ] &&
+	mkdir "$URL_FILE_PATH"
+[ ! -f "$URL_FILE_PATH/$URL_FILE_NAME" ] &&
 	touch "$URL_FILE_PATH/$URL_FILE_NAME"
 
-case "$1" in
-	*) bmks_display ;;
-esac
+bmks_display
